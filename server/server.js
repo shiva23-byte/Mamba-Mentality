@@ -13,11 +13,17 @@ const cron = require('node-cron');
 const connectDB = require('./config/db');
 const UserDay = require('./models/UserDay');
 
+const allowedOrigins = [
+  process.env.CLIENT_URL,
+  'http://localhost:5173',
+  'http://localhost:3000'
+].filter(Boolean);
+
 const app = express();
 const server = http.createServer(app);
 const io = new Server(server, {
   cors: {
-    origin: ['http://localhost:5173', 'http://localhost:3000'],
+    origin: allowedOrigins,
     methods: ['GET', 'POST', 'PATCH', 'DELETE'],
   },
 });
@@ -27,7 +33,7 @@ app.set('io', io);
 
 // Middleware
 app.use(cors({
-  origin: ['http://localhost:5173', 'http://localhost:3000'],
+  origin: allowedOrigins,
 }));
 app.use(express.json());
 
