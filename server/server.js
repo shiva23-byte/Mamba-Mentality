@@ -102,12 +102,21 @@ cron.schedule('*/30 * * * *', async () => {
 
 // Middleware to ensure DB connection on serverless environments (Vercel)
 let cachedDB = null;
+const mongoose = require('mongoose');
 app.use(async (req, res, next) => {
-  if (!cachedDB) {
+  if (req.path === '/api/health') {
+    return next();
+  }
+
+  if (!cachedDB || mongoose.connection.readyState !== 1) {
     try {
       cachedDB = await connectDB();
     } catch (err) {
       console.error('[Vercel] DB Connection middleware failed:', err.message);
+      return res.status(503).json({ 
+        error: 'Database connection failed. Please ensure MONGODB_URI is set correctly in Vercel environment variables and 0.0.0.0/0 (Access from Anywhere) is whitelisted in MongoDB Atlas Network Access.',
+        details: err.message
+      });
     }
   }
   next();
