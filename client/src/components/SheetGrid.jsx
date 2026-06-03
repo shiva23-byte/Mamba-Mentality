@@ -84,6 +84,7 @@ export default function SheetGrid({ onEditActivity }) {
       });
       const data = await res.json();
       setMonthData(prev => ({ ...prev, [date]: data.activities || [] }));
+      window.dispatchEvent(new CustomEvent('activity-added', { detail: data }));
     } catch (err) {
       console.error('Update failed:', err);
     }
@@ -96,6 +97,7 @@ export default function SheetGrid({ onEditActivity }) {
       });
       const data = await res.json();
       setMonthData(prev => ({ ...prev, [date]: data.activities || [] }));
+      window.dispatchEvent(new CustomEvent('activity-added', { detail: data }));
     } catch (err) {
       console.error('Delete failed:', err);
     }
@@ -146,6 +148,7 @@ export default function SheetGrid({ onEditActivity }) {
         });
         await Promise.all(promises);
         fetchMonthData();
+        window.dispatchEvent(new CustomEvent('activity-added'));
       } catch (err) {
         console.error('Delete failed:', err);
       }

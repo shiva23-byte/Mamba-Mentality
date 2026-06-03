@@ -85,6 +85,19 @@ cron.schedule('*/30 * * * *', async () => {
   }
 });
 
+// Middleware to ensure DB connection on serverless environments (Vercel)
+let cachedDB = null;
+app.use(async (req, res, next) => {
+  if (!cachedDB) {
+    try {
+      cachedDB = await connectDB();
+    } catch (err) {
+      console.error('[Vercel] DB Connection middleware failed:', err.message);
+    }
+  }
+  next();
+});
+
 // Start
 const PORT = process.env.PORT || 5000;
 
@@ -105,4 +118,9 @@ async function start() {
   });
 }
 
-start();
+// Only start the HTTP listener if not on Vercel
+if (!process.env.VERCEL) {
+  start();
+}
+
+module.exports = app;
