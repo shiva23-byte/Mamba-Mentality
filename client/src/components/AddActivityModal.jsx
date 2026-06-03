@@ -172,7 +172,7 @@ export default function ActivityModal({ open, onOpenChange, onSubmit, selectedDa
 
             {/* Time Range */}
             <div className="space-y-2">
-              <label className="text-sm font-medium text-slate-secondary">Time Format</label>
+              <label className="text-sm font-medium text-slate-secondary">Time Range</label>
               <input
                 id="activity-timerange"
                 type="text"

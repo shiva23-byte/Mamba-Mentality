@@ -236,7 +236,8 @@ export default function SheetGrid({ onEditActivity }) {
           week.forEach((cell) => {
             const dayActs = monthData[cell.date] || [];
             dayActs.forEach((act) => {
-              const key = `${act.name.toLowerCase().trim()}-${act.category}-${act.plannedMinutes}`;
+              const timeRangeKey = (act.timeRange || '').toLowerCase().trim().replace(/\s+/g, '');
+              const key = `${act.name.toLowerCase().trim()}-${act.category}-${act.plannedMinutes}-${timeRangeKey}`;
               if (!uniqueActivityKeys.has(key)) {
                 uniqueActivityKeys.add(key);
                 uniqueActivities.push({
@@ -248,7 +249,10 @@ export default function SheetGrid({ onEditActivity }) {
                 });
               }
               const uniqueAct = uniqueActivities.find(
-                u => `${u.name.toLowerCase().trim()}-${u.category}-${u.plannedMinutes}` === key
+                u => {
+                  const uTimeRangeKey = (u.timeRange || '').toLowerCase().trim().replace(/\s+/g, '');
+                  return `${u.name.toLowerCase().trim()}-${u.category}-${u.plannedMinutes}-${uTimeRangeKey}` === key;
+                }
               );
               if (uniqueAct) {
                 uniqueAct.instances[cell.date] = act;
@@ -262,7 +266,7 @@ export default function SheetGrid({ onEditActivity }) {
             <div
               key={weekIdx}
               ref={(el) => (weekRefs.current[weekIdx] = el)}
-              className="min-w-[800px]"
+              className="min-w-[1000px]"
             >
               {/* Week header stripe */}
               <div className={`week-header week-stripe-${weekIdx + 1}`}>
@@ -278,10 +282,11 @@ export default function SheetGrid({ onEditActivity }) {
                 <div className="sheet-col-header border-b border-sheet-border">
                   <div 
                     className="grid items-center px-4 py-2 gap-2"
-                    style={{ gridTemplateColumns: 'minmax(150px, 3fr) 50px 60px repeat(7, 1fr) 85px' }}
+                    style={{ gridTemplateColumns: 'minmax(150px, 3fr) 50px 120px 60px repeat(7, 1fr) 85px' }}
                   >
                     <div className="text-left font-bold text-slate-secondary">Activity</div>
                     <div className="text-center font-bold text-slate-secondary">Cat</div>
+                    <div className="text-center font-bold text-slate-secondary">Time</div>
                     <div className="text-center font-bold text-slate-secondary">Plan</div>
                     {week.map((cell) => {
                       const dateObj = new Date(cell.date + 'T00:00:00');
@@ -326,24 +331,17 @@ export default function SheetGrid({ onEditActivity }) {
                   >
                     <div 
                       className="grid items-center px-4 py-2 gap-2"
-                      style={{ gridTemplateColumns: 'minmax(150px, 3fr) 50px 60px repeat(7, 1fr) 85px' }}
+                      style={{ gridTemplateColumns: 'minmax(150px, 3fr) 50px 120px 60px repeat(7, 1fr) 85px' }}
                     >
                       {/* 1. Activity Name & Category color dot */}
-                      <div className="flex items-start gap-2 min-w-0 py-0.5">
+                      <div className="flex items-center gap-2 min-w-0 py-0.5">
                         <div
-                          className="w-1 h-6 rounded-full flex-shrink-0 mt-0.5"
+                          className="w-1 h-6 rounded-full flex-shrink-0"
                           style={{ backgroundColor: CATEGORY_COLORS[uniqueAct.category] || '#b2bec3' }}
                         />
-                        <div className="min-w-0">
-                          <span className="text-sm font-semibold text-slate-primary truncate block" title={uniqueAct.name}>
-                            {uniqueAct.name}
-                          </span>
-                          {uniqueAct.timeRange && (
-                            <span className="text-[9px] text-slate-muted font-mono font-semibold bg-sheet-bg px-1.5 py-0.2 rounded border border-sheet-border inline-block mt-0.5" title="Scheduled Time">
-                              {uniqueAct.timeRange}
-                            </span>
-                          )}
-                        </div>
+                        <span className="text-sm font-semibold text-slate-primary truncate" title={uniqueAct.name}>
+                          {uniqueAct.name}
+                        </span>
                       </div>
 
                       {/* 2. Category Icon */}
@@ -351,7 +349,12 @@ export default function SheetGrid({ onEditActivity }) {
                         {CATEGORY_ICONS[uniqueAct.category] || '📋'}
                       </div>
 
-                      {/* 3. Planned Minutes */}
+                      {/* 3. Time Range Column */}
+                      <div className="text-center text-xs font-mono font-semibold text-slate-muted bg-sheet-bg/40 px-2 py-0.5 rounded border border-sheet-border truncate" title={uniqueAct.timeRange || 'Not scheduled'}>
+                        {uniqueAct.timeRange || '—'}
+                      </div>
+
+                      {/* 4. Planned Minutes */}
                       <div className="text-center text-xs font-mono font-bold text-slate-muted">
                         {uniqueAct.plannedMinutes}m
                       </div>
