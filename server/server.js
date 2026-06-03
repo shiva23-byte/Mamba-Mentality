@@ -19,11 +19,19 @@ const allowedOrigins = [
   'http://localhost:3000'
 ].filter(Boolean);
 
+const checkOrigin = (origin, callback) => {
+  if (!origin || allowedOrigins.includes(origin) || origin.endsWith('.vercel.app') || origin.includes('localhost')) {
+    callback(null, true);
+  } else {
+    callback(new Error('Not allowed by CORS'));
+  }
+};
+
 const app = express();
 const server = http.createServer(app);
 const io = new Server(server, {
   cors: {
-    origin: allowedOrigins,
+    origin: checkOrigin,
     methods: ['GET', 'POST', 'PATCH', 'DELETE'],
   },
 });
@@ -33,7 +41,7 @@ app.set('io', io);
 
 // Middleware
 app.use(cors({
-  origin: allowedOrigins,
+  origin: checkOrigin,
 }));
 app.use(express.json());
 
