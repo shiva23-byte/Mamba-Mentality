@@ -5,9 +5,12 @@ export function cn(...inputs) {
   return twMerge(clsx(inputs));
 }
 
-export const API_BASE = import.meta.env.VITE_API_URL 
-  ? `${import.meta.env.VITE_API_URL}/api` 
-  : 'http://localhost:5000/api';
+const rawApiUrl = import.meta.env.VITE_API_URL || '';
+const formattedApiUrl = rawApiUrl 
+  ? (rawApiUrl.startsWith('http://') || rawApiUrl.startsWith('https://') ? rawApiUrl : `https://${rawApiUrl}`)
+  : 'http://localhost:5000';
+
+export const API_BASE = `${formattedApiUrl}/api`;
 
 export const CATEGORY_COLORS = {
   Education: '#0984e3',
