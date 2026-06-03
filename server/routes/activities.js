@@ -49,7 +49,7 @@ router.get('/range/:start/:end', async (req, res) => {
     res.json(days);
   } catch (error) {
     console.error('[Activities] GET /range error:', error.message);
-    res.status(500).json({ error: 'Failed to fetch activities range' });
+    res.status(500).json({ error: error.message, stack: error.stack });
   }
 });
 
@@ -120,7 +120,7 @@ router.patch('/:date/:activityId', async (req, res) => {
     res.json(day);
   } catch (error) {
     console.error('[Activities] PATCH error:', error.message);
-    res.status(400).json({ error: error.message });
+    res.status(400).json({ error: error.message, stack: error.stack });
   }
 });
 
