@@ -2,8 +2,15 @@ require('dotenv').config();
 
 // Override DNS to use Google's public DNS servers
 // (fixes mongodb+srv:// resolution on restricted campus/corporate networks)
-const dns = require('dns');
-dns.setServers(['8.8.8.8', '8.8.4.4', '1.1.1.1']);
+// Only run this locally (skip on Vercel to avoid serverless permission/socket errors)
+if (!process.env.VERCEL) {
+  const dns = require('dns');
+  try {
+    dns.setServers(['8.8.8.8', '8.8.4.4', '1.1.1.1']);
+  } catch (err) {
+    console.warn('Failed to set custom DNS servers:', err.message);
+  }
+}
 
 const express = require('express');
 const http = require('http');

@@ -2,7 +2,14 @@ const mongoose = require('mongoose');
 const dns = require('dns');
 
 // Force Google DNS to resolve MongoDB Atlas SRV records reliably
-dns.setServers(['8.8.8.8', '8.8.4.4', '1.1.1.1']);
+// Only run this locally (skip on Vercel to avoid serverless permission/socket errors)
+if (!process.env.VERCEL) {
+  try {
+    dns.setServers(['8.8.8.8', '8.8.4.4', '1.1.1.1']);
+  } catch (err) {
+    console.warn('Failed to set custom DNS servers in db config:', err.message);
+  }
+}
 
 const connectDB = async () => {
   try {
