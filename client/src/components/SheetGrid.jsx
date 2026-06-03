@@ -329,14 +329,21 @@ export default function SheetGrid({ onEditActivity }) {
                       style={{ gridTemplateColumns: 'minmax(150px, 3fr) 50px 60px repeat(7, 1fr) 85px' }}
                     >
                       {/* 1. Activity Name & Category color dot */}
-                      <div className="flex items-center gap-2 min-w-0">
+                      <div className="flex items-start gap-2 min-w-0 py-0.5">
                         <div
-                          className="w-1 h-6 rounded-full flex-shrink-0"
+                          className="w-1 h-6 rounded-full flex-shrink-0 mt-0.5"
                           style={{ backgroundColor: CATEGORY_COLORS[uniqueAct.category] || '#b2bec3' }}
                         />
-                        <span className="text-sm font-semibold text-slate-primary truncate" title={uniqueAct.name}>
-                          {uniqueAct.name}
-                        </span>
+                        <div className="min-w-0">
+                          <span className="text-sm font-semibold text-slate-primary truncate block" title={uniqueAct.name}>
+                            {uniqueAct.name}
+                          </span>
+                          {uniqueAct.timeRange && (
+                            <span className="text-[9px] text-slate-muted font-mono font-semibold bg-sheet-bg px-1.5 py-0.2 rounded border border-sheet-border inline-block mt-0.5" title="Scheduled Time">
+                              {uniqueAct.timeRange}
+                            </span>
+                          )}
+                        </div>
                       </div>
 
                       {/* 2. Category Icon */}
